@@ -3,15 +3,20 @@ import random
 # Nota - Comentários em português, mas o código em inglês porque fica aesthetic (mais bonito)
 
 # Classe para definir o que é o neurónio
-# tem como entrada a função de ativação aka sigma
-# e o d que vai servir para a indicação do volume de entrada
 class Neuron:
     # Construtor da classe
+    # d - é a quantidade de entradas
+    # sigma - função de ativação do neurónio
     def __init__(self, d, sigma):
-        # W - Vetor de pesos que vai começar com -1's e 1s depois com o treino isso muda
+        # W - Vetor de pesos (valor que define a importância de uma entrada específica) que vai começar com −1's e 1s depois com o treino isso muda
         self.w = [random.uniform(-1, 1) for _ in range(d)]
-        # B - Valor que depois decide qual é o resultado suposto, ou seja, se for maior que b passa, neste momento fica -1 ou 1
+        # b - Valor que decide o valor mínimo da combinação de entradas e pesos para o neurónio ficar ativo
         self.b = random.uniform(-1, 1)
+        # O valor de deltas é taxa de aprendizagem a ser adotada por cada w ou b respectivamente
+        # Delta W - Vetor com a variação dos pesos associado a cada entrada
+        self.delta_w = [0 for _ in range(d)]
+        # Delta B - Valor de variação do bias
+        self.delta_b = 0
         # H - Soma das ativações das entradas
         self.h = 0
         # y - Saída do neurónio
@@ -32,11 +37,13 @@ class Neuron:
         self.derivativeY = self.sigma[1](self.h)
         return self.y
 
-    # Ajustar os pesos consuante o resultado da camada anterior
+    # Ajustar os pesos consoante o resultado da camada anterior
     # y_last - vetor de saída da camada anterior
     # a - valor que dita o quão o peso do atual neurónio é que têm de ser ajustado
-    def adapt(self, error_prop, y_last, a):
-        delta_w = [item * (-a * self.derivativeY * error_prop) for item in y_last]
-        self.w = [w + delta_w for w, delta_w in zip(delta_w, self.w)]
-        delta_b = -a * self.derivativeY * error_prop
-        self.b = self.b + delta_b
+    def adapt(self, error_prop, y, a, beta):
+        moment_delta = [beta * value for value in self.delta_w]
+        self.delta_w = [item * (-a * self.derivativeY * error_prop) + moment_w for item, moment_w in zip(y, moment_delta)]
+        self.w = [w + delta_w for w, delta_w in zip(self.delta_w, self.w)]
+        moment_b = beta * self.delta_b
+        self.delta_b = -a * self.derivativeY * error_prop + moment_b
+        self.b = self.b + self.delta_b
