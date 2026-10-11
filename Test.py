@@ -38,9 +38,13 @@ def main():
     first_guess = my_network.propagate(X[1])
     print(f"Palpite ANTES do treino (Deveria ser perto de 1): {first_guess}")
 
-    for _ in range(1000):
-        my_network.train(X, Y, 1000, 0.05, 0.2, 0.1)
-        better_guess = my_network.propagate(X[1])
-        print(f"Palpite DEPOIS do treino (Deveria ser perto de 1): {better_guess}")
+
+    data = my_network.train(X, Y, 1000, 0.05, 0.2, 0.1)
+
+    print(data)
+
+    for i in range(len(X)):
+        new_guess = my_network.propagate(X[i])
+        print(f"Palpite DEPOIS do treino : {new_guess}")
 
 main()

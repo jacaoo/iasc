@@ -57,10 +57,14 @@ class NeuralNetwork:
 
     # Função para treinar os resultados com base no x e no y, sendo o x a raw data e o y os resultados esperados
     def train(self, X, Y, n_seasons, avg_error_max, a, beta):
+        last_season = 0
         for i in range(n_seasons):
             error_per_season = 0
             for x, y in zip(X, Y):
                 error_x = self.adapt(x, y, a, beta)
                 error_per_season = max(error_per_season, error_x)
             if error_per_season <= avg_error_max:
+                last_season = i
                 break
+
+        return last_season
